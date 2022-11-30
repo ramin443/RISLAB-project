@@ -1,19 +1,20 @@
 <launch>
 
-    <!-- including the empty underwater world from uuv_gazebo_worlds -->
-   <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
-  </include>  
+    <!-- argument cmd_vel to provide commands to the teleop twist keyboard-->
+  <arg name = "cmd_vel" default="rexrov/cmd_vel"/>
   
-  <!-- including the rexrov from rexrov_default.launch-->
+    <!-- including the rexrov from rexrov_default.launch-->
   <include file="$(find uuv_gazebo)/launch/rexrov_demos/rexrov_default.launch">
   </include>
   
-   <!-- argument cmd_vel to provide commands to the teleop twist keyboard-->
-  <arg name = "cmd_vel" default="rexrov/cmd_vel"/>
+      <!-- including the empty underwater world from uuv_gazebo_worlds -->
+   <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
+  </include>  
   
+
      <!-- including node teleop twist keyboard-->
   <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop" output="screen">
-  
+ 
      <!-- maps command from keyboard to the cmd_vel to control the robot-->
     <remap from="cmd_vel" to="$(arg cmd_vel)"/>
   </node>
