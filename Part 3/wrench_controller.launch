@@ -1,8 +1,11 @@
 <launch>
 
-   <!-- argument cmd_vel to provide commands to the teleop twist keyboard-->
+   <!-- setting arguments-->
   <arg name = "cmd_vel" default="rexrov/cmd_vel"/>
-  <node pkg="uuv_thrust_controller" type="thrust_controller.py" name="thruster" output="screen">
+  <arg name="launch_rviz" default="1"/>
+  
+ 
+  <node pkg="thruster_controller" type="wrench_thruster.py" name="thruster" output="screen">
       <remap from="cmd_vel" to="$(arg cmd_vel)"/>
  </node>
  
@@ -10,17 +13,12 @@
    <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
   </include>  
   
-  <!-- including the rexrov from rexrov_default.launch-->
+  <!-- including the rexrov from rexrov_wrench_control.launch-->
   <include file="$(find uuv_gazebo)/launch/rexrov_demos/rexrov_wrench_control.launch">
   </include>
   
 
-  
-     <!-- including node teleop twist keyboard-->
-  <arg name="launch_rviz" default="1"/>
-  <group if="$(arg launch-rviz)">
-  <node name="rviz" pkg="rviz" type="rviz" output="screen" args-"-d $(find uuv_gazebo)/rviz/-rexrov_default.rviz" />
+  <group if="$(arg launch_rviz)">
+  <node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find uuv_gazebo)/rviz/rexrov_default.rviz" />
   </group>
-  </node>
-    
 </launch>
