@@ -23,37 +23,28 @@ from geometry_msgs.msg import Wrench, Vector3, Point
 def readinputs():
 	rospy._init_node_('listener',anonymous=True)
 	#subscribe from /rexrov/thruster_manager/input
-	rospy.Subscriber("/rexrov/thruster_manager/input", Wrench, callback)
+	rospy.Subscriber("/rexrov/thruster_manager/input", Wrench, publish_thrusters)
 	rospy.spin()
 	
 	
-def apply_body_wrench_client(body_name, reference_frame, reference_point, wrench, start_time, duration):
+def wrench_client(body_name, reference_frame, reference_point, wrench, start_time, duration):
   #  Call thrust commands as the service /gazebo/apply_body_wrench
 
     rospy.wait_for_service('/gazebo/apply_body_wrench')
     try:
-        # create ServiceProxy object to call /gazebo/apply_body_wrench' service, passing ApplyBodyWrench 
-        # as payload
+        # proxy object to call /gazebo/apply_body_wrench' service
         apply_body_wrench = rospy.ServiceProxy('/gazebo/apply_body_wrench', ApplyBodyWrench)
-        # send service call with given parameters
         apply_body_wrench(body_name, reference_frame, reference_point, wrench, start_time, duration)
     except rospy.ServiceException as e:
         print("failed to call service %s" % e)
         
         
-def callback(data):
+def publish_thrusters(data):
     #Callback function for listener, which publishes thruster commands using apply_body_wrench_client given respective data
     
     rospy.loginfo(rospy.get_caller_id() + "Forces: %s", data.force)
     rospy.loginfo(rospy.get_caller_id() + "Torques: %s", data.torque)
-    # define service call parameters according to obtained data
-
-    body_name = 'nessie::base_link'
-    start_time = rospy.Time(secs=0, nsecs=0)
-    #Setting the duration for 1 sec
-    duration = rospy.Duration(secs=1, nsecs=0)
-    reference_point = Point(x=0, y=0, z=0)
-    wrench = Wrench(
+    wrenchobj = Wrench(
         force=Vector3(
             x=data.force.x,
             y=data.force.y,
@@ -63,7 +54,7 @@ def callback(data):
             y=data.torque.y,
             z=data.torque.z))
     # call required service using apply_body_wrench_client
-    apply_body_wrench_client(body_name, "", reference_point, wrench, start_time, duration)
+    wrench_client('robot_rov::base_link', "", Point(x=0, y=0, z=0), wrenchobj, rospy.Time(secs=0, nsecs=0), rospy.Duration(secs=1, nsecs=0))
 
 
 if __name__ == '__main__':

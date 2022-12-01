@@ -58,10 +58,9 @@ class KeyBoardVehicleTeleop:
                 raise rospy.ROSException('Teleoperation output must be either '
                                          'twist or accel')
         # Name Publisher topics accordingly
-        if self._msg_type == 'wrench':
+
             self._output_pub = rospy.Publisher('/rexrov/thruster_manager/input', Wrench, queue_size=10)             
-        else:
-            self._output_pub = rospy.Publisher('/rexrov/thruster_manager/input', Wrench, queue_size=10)
+       
 
         print(self.msg)
 
@@ -109,9 +108,7 @@ class KeyBoardVehicleTeleop:
             self.speed = 2
 
         # Choose ros message accordingly
-        if self._msg_type == 'wrench':
-            cmd = Wrench()
-        else:
+
             cmd = Wrench()
 
         # If a key is pressed assign relevent linear / angular vel
@@ -119,40 +116,40 @@ class KeyBoardVehicleTeleop:
             # Linear velocities:
             # Forward
             if key_press == "w":
-                self.l.x = self._speed_windup(self.l.x, self.linear_increment, self.linear_limit, False)
+                self.l.x = self.speed
             # Backwards
             if key_press == "s":
-                self.l.x = self._speed_windup(self.l.x, self.linear_increment, self.linear_limit, True)
+                self.l.x = self.speed*(-1)
             # Left
             if key_press == "a":
-                self.l.y = self._speed_windup(self.l.y, self.linear_increment, self.linear_limit, False)
+                self.l.y = self.speed
             if key_press == "d":
-                self.l.y = self._speed_windup(self.l.y, self.linear_increment, self.linear_limit, True)
+                self.l.y = self.speed*(-1)
             if key_press == "x":
-                self.l.z = self._speed_windup(self.l.z, self.linear_increment, self.linear_limit*0.5, False)
+                self.l.z = self.speed
             # Down
             if key_press == "z":
-                self.l.z = self._speed_windup(self.l.z, self.linear_increment, self.linear_limit*0.5, True)
+                self.l.z = self.speed*(-1)
 
             # Angular Velocities
             # Roll Left
             if key_press == "j":
-                self.a.x = self._speed_windup(self.a.x, self.linear_increment, self.linear_limit, True)
+                self.a.x = self.speed
             # Roll Right
             if key_press == "l":
-                self.a.x =  self._speed_windup(self.a.x, self.linear_increment, self.linear_limit, False)
+                self.a.x =  self.speed*(-1)
             # Pitch Down
             if key_press == "i":
-                self.a.y = self._speed_windup(self.a.y, self.linear_increment, self.linear_limit, False)
+                self.a.y = self.speed
             # Pitch Up
             if key_press == "k":
-                self.a.y = self._speed_windup(self.a.y, self.linear_increment, self.linear_limit, True)
+                self.a.y = self.speed*(-1)
             # Yaw Left
             if key_press == "q":
-                self.a.z = self._speed_windup(self.a.z, self.linear_increment, self.linear_limit, False)
+                self.a.z = self.speed
             # Yaw Right
             if key_press == "e":
-                self.a.z = self._speed_windup(self.a.z, self.linear_increment, self.linear_limit, True)
+                self.a.z = self.speed*(-1)
 
         else:
             # If no button is pressed reset forces and torque to 0
